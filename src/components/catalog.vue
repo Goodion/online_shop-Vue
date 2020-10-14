@@ -1,18 +1,7 @@
 <template>
   <section class="catalog">
-    <div class="categories">
-      <div class="category"
-           v-bind:class="[`category__${category.id}`, {active: category.id === currentCategoryId}]"
-           v-bind:id="category.id"
-           v-for="(category, index) in categories"
-           v-bind:key="index"
-           v-on:click="activateCategory({items: category.items, id: category.id})"
-      >
-        {{ category.title }}
-      </div>
-    </div>
     <ul class="catalog__list">
-      <li class="catalog__item" v-for="(item, index) in currentCategory" v-bind:key="index">
+      <li class="catalog__item" v-for="(item, index) in catalog" v-bind:key="index">
         <a class="catalog__pic" href="#">
           <img v-bind:src="`img/${item.image}`" v-bind:srcset="`img/${item.image} 2x`" v-bind:alt="item.title">
         </a>
@@ -103,51 +92,24 @@
 </template>
 
 <script>
-import categories from "@/data/categories";
+import phones from "@/data/products/phones";
+import portable_speakers from "@/data/products/portable-speakers";
+import tablets from "@/data/products/tablets";
 
 export default {
   name: "catalog",
   data() {
     return {
-      currentCategory: categories[0].items,
-      currentCategoryId: categories[0].id,
-      isActive: false,
-      categories,
+      phones,
+      portable_speakers,
+      tablets,
+      catalog: phones.concat(portable_speakers).concat(tablets),
     }
   },
-  methods: {
-    activateCategory(category) {
-      this.currentCategory = category.items;
-      this.currentCategoryId = category.id;
-    }
-  },
-}
+  }
 </script>
 
 <style scoped>
-.categories {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  padding: 20px 0;
-}
-.category {
-  font-weight: bolder;
-  font-size: larger;
-  color: #b9b9b9;
-  cursor: pointer;
-}
-.category:hover {
-  color: #737373;
-}
-.active {
-  color: #272727;
-  text-decoration: underline;
-  cursor: default;
-}
-.active:hover {
-  color: #272727;
-}
 .catalog__list a {
   display:flex;
   align-items:center;
