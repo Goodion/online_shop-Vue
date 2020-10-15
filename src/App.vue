@@ -282,13 +282,13 @@
 </template>
 
 <script>
-import catalog from "@/components/catalog";
+import Catalog from "@/components/Catalog";
 
 
 export default {
   name: 'App',
   components: {
-    catalog
+    Catalog
   }
 }
 </script>
