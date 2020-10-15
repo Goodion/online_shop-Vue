@@ -1,6 +1,6 @@
 <template>
   <section class="catalog">
-    <ProductList v-bind:catalog="catalog"></ProductList>
+    <ProductList v-bind:catalog="catalog" />
     <ul class="catalog__pagination pagination">
       <li class="pagination__item">
         <a class="pagination__link pagination__link--arrow pagination__link--disabled" aria-label="Предыдущая страница">
