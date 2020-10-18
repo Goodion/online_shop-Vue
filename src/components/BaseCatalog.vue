@@ -1,13 +1,16 @@
 <template>
-  <section class="catalog">
-    <product-list v-bind:catalog="getCurrentPageList" />
-    <base-pagination
-        v-bind:itemsQuantity="countItemsQuantity"
-        v-bind:itemsPerPage="itemsPerPage"
-        v-bind:currentPage="currentPage"
-        v-on:set-current-page="setCurrentPage"
-    />
-  </section>
+  <div class="content__catalog">
+    <product-filter />
+    <section class="catalog">
+      <product-list v-bind:catalog="getCurrentPageList" />
+      <base-pagination
+          v-bind:itemsQuantity="countItemsQuantity"
+          v-bind:itemsPerPage="itemsPerPage"
+          v-bind:currentPage="currentPage"
+          v-on:set-current-page="setCurrentPage"
+      />
+    </section>
+  </div>
 </template>
 
 <script>
@@ -16,12 +19,14 @@ import portable_speakers from "@/data/products/portable-speakers";
 import tablets from "@/data/products/tablets";
 import ProductList from "@/components/ProductList";
 import BasePagination from "@/components/BasePagination";
+import ProductFilter from "@/components/ProductFilter";
 
 export default {
   name: "catalog",
   components: {
     BasePagination,
-    ProductList
+    ProductList,
+    ProductFilter,
   },
   data() {
     return {

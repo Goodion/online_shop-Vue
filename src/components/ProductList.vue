@@ -1,6 +1,6 @@
 <template>
   <ul class="catalog__list">
-    <li class="catalog__item" v-for="(item, index) in catalog" v-bind:key="index">
+    <li class="catalog__item" v-for="item in catalog" v-bind:key="item.id">
       <product-item v-bind:item="item"/>
     </li>
   </ul>
