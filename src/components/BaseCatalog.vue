@@ -1,13 +1,13 @@
 <template>
   <div class="content__catalog">
-    <product-filter />
+    <product-filter v-on:submit-filter="getFilteredCatalog" v-on:clear-filter="getFullCatalog"/>
     <section class="catalog">
       <product-list v-bind:catalog="getCurrentPageList" />
       <base-pagination
           v-bind:itemsQuantity="countItemsQuantity"
           v-bind:itemsPerPage="itemsPerPage"
           v-bind:currentPage="currentPage"
-          v-on:set-current-page="setCurrentPage"
+          v-on:set-current-page="getCurrentPage"
       />
     </section>
   </div>
@@ -35,6 +35,7 @@ export default {
       tablets,
       currentPage: 1,
       itemsPerPage: 4,
+      catalog: this.getFullCatalog(),
     }
   },
   computed: {
@@ -46,13 +47,46 @@ export default {
     countItemsQuantity() {
       return this.catalog.length;
     },
-    catalog() {
-      return smartphones.concat(portable_speakers).concat(tablets);
+    modifyCatalog: {
+      get() {
+        return this.catalog;
+      },
+      set(v) {
+        this.catalog = v;
+      }
     }
   },
   methods: {
-    setCurrentPage(page) {
+    getCurrentPage(page) {
       this.currentPage = page;
+    },
+    getFilteredCatalog(params) {
+      const filteredCatalog = this.catalog.filter((item) => {
+        if (params.minPrice) {
+          if (item.price < params.minPrice || item.price > params.maxPrice) {
+            return false;
+          }
+        }
+
+        if (params.category) {
+          if (item.category !== params.category) {
+            return false;
+          }
+        }
+
+        if (params.color) {
+          if (!item.colors || item.colors.findIndex(item => item === params.color) === -1) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+      return this.modifyCatalog = filteredCatalog;
+    },
+    getFullCatalog() {
+      this.getCurrentPage(1);
+      return this.modifyCatalog = smartphones.concat(portable_speakers).concat(tablets);
     }
   }
 }
