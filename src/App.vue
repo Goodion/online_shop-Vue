@@ -25,17 +25,7 @@
       </div>
     </header>
 
-    <main class="content container">
-      <div class="content__top content__top--catalog">
-        <h1 class="content__title">
-          Каталог
-        </h1>
-        <span class="content__info">
-        152 товара
-      </span>
-      </div>
-      <catalog></catalog>
-    </main>
+    <component v-bind:is="currentPageComponent" v-bind:page-params="currentPagesParams" />
 
     <footer class="footer">
       <div class="footer__wrapper container">
@@ -132,13 +122,39 @@
 </template>
 
 <script>
-import Catalog from "@/components/BaseCatalog";
+import MainPage from "@/pages/MainPage";
+import ProductPage from "@/pages/ProductPage";
+import NotFoundPage from "@/pages/NotFoundPage";
+import eventBus from "@/eventBus";
+
+const routes = {
+  main: 'MainPage',
+  product: 'ProductPage',
+}
 
 export default {
   name: 'App',
-  components: {
-    Catalog
+  components: {NotFoundPage, MainPage, ProductPage},
+  data() {
+    return {
+      currentPage: 'main',
+      currentPagesParams: {},
+    }
   },
+  methods: {
+    gotoPage(pageName, pageParams) {
+      this.currentPage = pageName;
+      this.currentPagesParams = pageParams || {};
+    }
+  },
+  computed: {
+    currentPageComponent() {
+      return routes[this.currentPage] || 'NotFoundPage';
+    }
+  },
+  created() {
+    eventBus.$on('gotoPage', (pageName, pageParams) => this.gotoPage(pageName, pageParams));
+  }
 }
 </script>
 

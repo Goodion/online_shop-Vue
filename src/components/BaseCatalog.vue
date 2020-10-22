@@ -87,8 +87,8 @@ export default {
     getFullCatalog() {
       this.getCurrentPage(1);
       return this.modifyCatalog = smartphones.concat(portable_speakers).concat(tablets);
-    }
-  }
+    },
+  },
 }
 </script>
 

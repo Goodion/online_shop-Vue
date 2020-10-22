@@ -1,6 +1,6 @@
 <template>
   <span>
-    <a class="catalog__pic" href="#">
+    <a class="catalog__pic" href="#" v-on:click.prevent="gotoPage('product', {id: item.id})">
       <img v-bind:src="`img/${item.image}`" v-bind:srcset="`img/${item.image} 2x`" v-bind:alt="item.title">
     </a>
 
@@ -11,7 +11,7 @@
     </h3>
 
     <span class="catalog__price">
-            {{ item.price }}
+            {{ item.price | numberFormat }} ₽
           </span>
 
     <ul class="colors colors--black" v-if="item.colors">
@@ -26,20 +26,19 @@
 </template>
 
 <script>
+import gotoPage from "@/helpers/gotoPage";
+import getColorCode from "@/helpers/getColorCode";
+import numberFormat from "@/helpers/numberFormat";
+
 export default {
   name: "ProductItem",
   props: ['item'],
+  filters: {
+    numberFormat,
+  },
   methods: {
-    getColorCode(color) {
-      switch (color) {
-        case 'blue':
-          return '#73B6EA';
-        case 'green':
-          return '#8BE000';
-        case 'black':
-          return '#222';
-      }
-    }
+    getColorCode,
+    gotoPage,
   }
 }
 </script>
