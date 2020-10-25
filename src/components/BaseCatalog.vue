@@ -1,6 +1,13 @@
 <template>
   <div class="content__catalog">
-    <product-filter v-on:submit-filter="getFilteredCatalog" v-on:clear-filter="getFullCatalog"/>
+    <product-filter
+        v-bind:min-price="filterPriceFrom"
+        v-bind:max-price="filterPriceTo"
+        v-bind:category="filterCategory"
+        v-bind:color="filterColor"
+        v-on:submit-filter="getFilteredCatalog"
+        v-on:clear-filter="getFullCatalog"
+    />
     <section class="catalog">
       <product-list v-bind:catalog="getCurrentPageList" />
       <base-pagination
@@ -36,6 +43,11 @@ export default {
       currentPage: 1,
       itemsPerPage: 4,
       catalog: this.getFullCatalog(),
+
+      filterPriceFrom: 0,
+      filterPriceTo: 100000,
+      filterColor: 'empty',
+      filterCategory: 'any',
     }
   },
   computed: {
