@@ -6,11 +6,11 @@
       <fieldset class="form__block">
         <legend class="form__legend">Цена</legend>
         <label class="form__label form__label--price">
-          <input class="form__input" type="text" name="min-price" v-model="currentMinPrice">
+          <input class="form__input" type="text" name="min-price" v-model.number="currentMinPrice">
           <span class="form__value">От</span>
         </label>
         <label class="form__label form__label--price">
-          <input class="form__input" type="text" name="max-price" v-model="currentMaxPrice">
+          <input class="form__input" type="text" name="max-price" v-model.number="currentMaxPrice">
           <span class="form__value">До</span>
         </label>
       </fieldset>
@@ -86,26 +86,33 @@ export default {
       currentColor: 'empty',
     }
   },
+  watch: {
+    minPrice(v) {
+      this.currentMinPrice = v;
+    },
+    maxPrice(v) {
+      this.currentMaxPrice = v;
+    },
+    category(v) {
+      this.currentCategory = v;
+    },
+    color(v) {
+      this.currentColor = v;
+    }
+  },
   methods: {
     submitFilter() {
-      let params = {};
-      if (this.minPrice !== this.currentMinPrice || this.maxPrice !== this.currentMaxPrice) {
-        params.minPrice = parseInt(this.currentMinPrice);
-        params.maxPrice = parseInt(this.currentMaxPrice);
-      }
-      if (this.category !== this.currentCategory) {
-        params.category = this.currentCategory;
-      }
-      if (this.color !== this.currentColor) {
-        params.color = this.currentColor;
-      }
-      this.$emit('submit-filter', params);
+      this.$emit('update:minPrice', this.currentMinPrice);
+      this.$emit('update:maxPrice', this.currentMaxPrice);
+      this.$emit('update:category', this.currentCategory);
+      this.$emit('update:color', this.currentColor);
+      this.$emit('submit-filter');
     },
     clearFilter() {
-      this.currentMinPrice = this.minPrice;
-      this.currentMaxPrice = this.maxPrice;
-      this.currentCategory = this.category;
-      this.currentColor = this.color;
+      this.currentMinPrice = 0;
+      this.currentMaxPrice = 100000;
+      this.currentCategory = 'any';
+      this.currentColor = 'empty';
       this.$emit('clear-filter');
     }
   }

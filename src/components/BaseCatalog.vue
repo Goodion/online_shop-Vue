@@ -1,10 +1,10 @@
 <template>
   <div class="content__catalog">
     <product-filter
-        v-bind:min-price="filterPriceFrom"
-        v-bind:max-price="filterPriceTo"
-        v-bind:category="filterCategory"
-        v-bind:color="filterColor"
+        v-bind:min-price.sync="filterPriceFrom"
+        v-bind:max-price.sync="filterPriceTo"
+        v-bind:category.sync="filterCategory"
+        v-bind:color.sync="filterColor"
         v-on:submit-filter="getFilteredCatalog"
         v-on:clear-filter="getFullCatalog"
     />
@@ -72,26 +72,26 @@ export default {
     getCurrentPage(page) {
       this.currentPage = page;
     },
-    getFilteredCatalog(params) {
+    getFilteredCatalog() {
       const filteredCatalog = this.catalog.filter((item) => {
-        if (params.minPrice) {
-          if (item.price < params.minPrice || item.price > params.maxPrice) {
+
+        if (this.filterPriceFrom > 0 || this.filterPriceTo < 100000) {
+          if (item.price < this.filterPriceFrom || item.price > this.filterPriceTo) {
             return false;
           }
         }
 
-        if (params.category) {
-          if (item.category !== params.category) {
+        if (this.filterCategory !== 'any') {
+          if (item.category !== this.filterCategory) {
             return false;
           }
         }
 
-        if (params.color) {
-          if (!item.colors || item.colors.findIndex(item => item === params.color) === -1) {
+        if (this.filterColor !== 'empty') {
+          if (!item.colors || item.colors.findIndex(item => item === this.filterColor) === -1) {
             return false;
           }
         }
-
         return true;
       });
       return this.modifyCatalog = filteredCatalog;
