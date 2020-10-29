@@ -1,18 +1,18 @@
 <template>
   <span>
-    <a class="catalog__pic" href="#" v-on:click.prevent="gotoPage('product', {id: item.id})">
+    <router-link class="catalog__pic" v-bind:to="{name: 'product', params: {id: item.id}}">
       <img v-bind:src="`img/${item.image}`" v-bind:srcset="`img/${item.image} 2x`" v-bind:alt="item.title">
-    </a>
+    </router-link>
 
     <h3 class="catalog__title">
-      <a href="#">
+      <router-link v-bind:to="{name: 'product', params: {id: item.id}}">
         {{ item.title }}
-      </a>
+      </router-link>
     </h3>
 
     <span class="catalog__price">
-            {{ item.price | numberFormat }} ₽
-          </span>
+      {{ item.price | numberFormat }} ₽
+    </span>
 
     <ul class="colors colors--black" v-if="item.colors">
       <li class="colors__item" v-for="(color, index) in item.colors" v-bind:key="index">
@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import gotoPage from "@/helpers/gotoPage";
 import getColorCode from "@/helpers/getColorCode";
 import numberFormat from "@/helpers/numberFormat";
 
@@ -38,7 +37,6 @@ export default {
   },
   methods: {
     getColorCode,
-    gotoPage,
   }
 }
 </script>

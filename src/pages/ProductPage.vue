@@ -3,14 +3,14 @@
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="#" v-on:click.prevent="gotoPage('main')">
+          <router-link class="breadcrumbs__link" v-bind:to="{name: 'main'}">
             Каталог
-          </a>
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="#" v-on:click.prevent="gotoPage('main')">
+          <router-link class="breadcrumbs__link" v-bind:to="{name: 'main'}">
             {{ getCategoryName(item.category) }}
-          </a>
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link">
@@ -55,7 +55,7 @@
           {{ item.title }}
         </h2>
         <div class="item__form">
-          <form class="form" action="#" method="POST">
+          <form class="form" action="#" method="POST" @submit.prevent="addToCart">
             <b class="item__price">
               {{ item.price | numberFormat }} ₽
             </b>
@@ -105,15 +105,15 @@
 
             <div class="item__row">
               <div class="form__counter">
-                <button type="button" aria-label="Убрать один товар">
+                <button type="button" aria-label="Убрать один товар" v-on:click="productAmount--" v-bind:disabled="productAmount <= 1">
                   <svg width="12" height="12" fill="currentColor">
                     <use xlink:href="#icon-minus"></use>
                   </svg>
                 </button>
 
-                <input type="text" value="1" name="count">
+                <input type="text" name="count" v-model.number="productAmount">
 
-                <button type="button" aria-label="Добавить один товар">
+                <button type="button" aria-label="Добавить один товар" v-on:click="productAmount++">
                   <svg width="12" height="12" fill="currentColor">
                     <use xlink:href="#icon-plus"></use>
                   </svg>
@@ -187,18 +187,21 @@ import tablets from "@/data/products/tablets";
 import portable_speakers from "@/data/products/portable-speakers";
 import getColorCode from "@/helpers/getColorCode";
 import getCategoryName from "@/helpers/getCategoryName";
-import gotoPage from "@/helpers/gotoPage";
 import numberFormat from "@/helpers/numberFormat";
 
 export default {
   name: "ProductPage",
-  props: ['pageParams'],
+  data() {
+    return {
+      productAmount: 1
+    }
+  },
   computed: {
     catalog() {
       return smartphones.concat(portable_speakers).concat(tablets)
     },
     item() {
-      return this.catalog.find(item => item.id === this.pageParams.id);
+      return this.catalog.find(item => item.id === this.$route.params.id);
     }
   },
   filters: {
@@ -207,7 +210,12 @@ export default {
   methods: {
     getColorCode,
     getCategoryName,
-    gotoPage,
+    addToCart() {
+      this.$store.commit(
+          'addProduct',
+          {productId: this.item.id, amount: this.productAmount}
+      )
+    },
   }
 }
 </script>
@@ -217,5 +225,8 @@ export default {
   display: flex;
   align-items:center;
   justify-content: center;
+}
+button {
+  cursor: pointer;
 }
 </style>

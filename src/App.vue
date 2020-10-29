@@ -16,16 +16,11 @@
           8 800 600 90 09
         </a>
 
-        <a class="header__cart" href="cart.html" aria-label="Корзина с товарами">
-          <svg width="30" height="21" fill="currentColor">
-            <use xlink:href="#icon-cart"></use>
-          </svg>
-          <span class="header__count" aria-label="Количество товаров">3</span>
-        </a>
+        <cart-indicator />
       </div>
     </header>
 
-    <component v-bind:is="currentPageComponent" v-bind:page-params="currentPagesParams" />
+    <router-view />
 
     <footer class="footer">
       <div class="footer__wrapper container">
@@ -122,39 +117,11 @@
 </template>
 
 <script>
-import MainPage from "@/pages/MainPage";
-import ProductPage from "@/pages/ProductPage";
-import NotFoundPage from "@/pages/NotFoundPage";
-import eventBus from "@/eventBus";
-
-const routes = {
-  main: 'MainPage',
-  product: 'ProductPage',
-}
+import CartIndicator from "@/components/CartIndicator";
 
 export default {
   name: 'App',
-  components: {NotFoundPage, MainPage, ProductPage},
-  data() {
-    return {
-      currentPage: 'main',
-      currentPagesParams: {},
-    }
-  },
-  methods: {
-    gotoPage(pageName, pageParams) {
-      this.currentPage = pageName;
-      this.currentPagesParams = pageParams || {};
-    }
-  },
-  computed: {
-    currentPageComponent() {
-      return routes[this.currentPage] || 'NotFoundPage';
-    }
-  },
-  created() {
-    eventBus.$on('gotoPage', (pageName, pageParams) => this.gotoPage(pageName, pageParams));
-  }
+  components: {CartIndicator},
 }
 </script>
 
