@@ -10,21 +10,7 @@
       Артикул: {{ item.product.id }}
     </span>
 
-    <div class="product__counter form__counter">
-      <button type="button" aria-label="Убрать один товар" v-on:click="amount--" v-bind:disabled="amount <= 1">
-        <svg width="10" height="10" fill="currentColor">
-          <use xlink:href="#icon-minus"></use>
-        </svg>
-      </button>
-
-      <input type="text" v-model.number="amount" name="count">
-
-      <button type="button" aria-label="Добавить один товар" v-on:click="amount++">
-        <svg width="10" height="10" fill="currentColor">
-          <use xlink:href="#icon-plus"></use>
-        </svg>
-      </button>
-    </div>
+    <amount-modifier v-bind:amount.sync="amount"/>
 
     <b class="product__price">
       {{(item.amount * item.product.price) | numberFormat}} ₽
@@ -41,9 +27,11 @@
 <script>
 import numberFormat from "@/helpers/numberFormat";
 import {mapMutations} from 'vuex'
+import AmountModifier from "@/components/AmountModifier";
 
 export default {
   name: "CartItem",
+  components: {AmountModifier},
   props: ['item'],
   filters: {
     numberFormat

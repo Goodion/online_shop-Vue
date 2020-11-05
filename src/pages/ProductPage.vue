@@ -104,21 +104,8 @@
             </fieldset>
 
             <div class="item__row">
-              <div class="form__counter">
-                <button type="button" aria-label="Убрать один товар" v-on:click="productAmount--" v-bind:disabled="productAmount <= 1">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-minus"></use>
-                  </svg>
-                </button>
 
-                <input type="text" name="count" v-model.number="productAmount">
-
-                <button type="button" aria-label="Добавить один товар" v-on:click="productAmount++">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-plus"></use>
-                  </svg>
-                </button>
-              </div>
+              <amount-modifier v-bind:amount.sync="productAmount" />
 
               <button class="button button--primery" type="submit">
                 В корзину
@@ -188,9 +175,11 @@ import portable_speakers from "@/data/products/portable-speakers";
 import getColorCode from "@/helpers/getColorCode";
 import getCategoryName from "@/helpers/getCategoryName";
 import numberFormat from "@/helpers/numberFormat";
+import AmountModifier from "@/components/AmountModifier";
 
 export default {
   name: "ProductPage",
+  components: {AmountModifier},
   data() {
     return {
       productAmount: 1
