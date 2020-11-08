@@ -1,6 +1,5 @@
 <template>
   <main class="content container">
-
     <catalog />
   </main>
 </template>

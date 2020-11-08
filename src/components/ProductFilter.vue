@@ -19,10 +19,8 @@
         <legend class="form__legend">Категория</legend>
         <label class="form__label form__label--select">
           <select class="form__select" type="text" name="category" v-model="currentCategory">
-            <option value="any" selected>Все категории</option>
-            <option value="smartphones">Смартфоны</option>
-            <option value="tablets">Планшеты</option>
-            <option value="portable-speakers">Портативная акустика</option>
+            <option value="0" selected>Все категории</option>
+            <option v-bind:value="category.id" v-for="category in categories" v-bind:key="category.id">{{ category.title }}</option>
           </select>
         </label>
       </fieldset>
@@ -32,29 +30,17 @@
         <ul class="colors">
           <li class="colors__item">
             <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="empty" checked="" v-model="currentColor">
+              <input class="colors__radio sr-only" type="radio" name="color" value="empty" checked v-model="currentColor">
               <span class="colors__value diagonal-line">
                   </span>
             </label>
           </li>
-          <li class="colors__item">
+          <li class="colors__item" v-for="color in colors" v-bind:key="color.id">
             <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="blue" v-model="currentColor">
-              <span class="colors__value" style="background-color: #73B6EA;">
+              <input class="colors__radio sr-only" type="radio" v-bind:name="color.title" v-bind:value="color.id" v-model="currentColor">
+              <span class="colors__value" v-bind:style="{'background-color': color.code}">
                   </span>
             </label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="green" v-model="currentColor">
-              <span class="colors__value" style="background-color: #8BE000;">
-                </span></label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="black" v-model="currentColor">
-              <span class="colors__value" style="background-color: #000;">
-                </span></label>
           </li>
         </ul>
       </fieldset>
@@ -70,6 +56,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import {BASE_API_URL} from '@/config';
+
 export default {
   name: "ProductFilter",
   props: [
@@ -82,8 +71,19 @@ export default {
     return {
       currentMinPrice: 0,
       currentMaxPrice: 100000,
-      currentCategory: 'any',
+      currentCategory: 0,
       currentColor: 'empty',
+
+      colorsData: null,
+      categoriesData: null
+    }
+  },
+  computed: {
+    categories() {
+      return this.categoriesData ? this.categoriesData.items : [];
+    },
+    colors() {
+      return this.colorsData ? this.colorsData : [];
     }
   },
   watch: {
@@ -109,13 +109,26 @@ export default {
       this.$emit('submit-filter');
     },
     clearFilter() {
-      this.currentMinPrice = 0;
-      this.currentMaxPrice = 100000;
-      this.currentCategory = 'any';
-      this.currentColor = 'empty';
-      this.$emit('clear-filter');
-    }
-  }
+      this.$emit('update:minPrice', 0);
+      this.$emit('update:maxPrice', 100000);
+      this.$emit('update:category', 0);
+      this.$emit('update:color', 'empty');
+    },
+    getColors() {
+      axios
+          .get(BASE_API_URL + 'api/colors')
+          .then(response => this.colorsData = response.data.items);
+    },
+    getCategories() {
+      axios
+          .get(BASE_API_URL + 'api/productCategories')
+          .then(response => this.categoriesData = response.data);
+    },
+  },
+  created() {
+    this.getColors();
+    this.getCategories();
+  },
 }
 </script>
 

@@ -9,7 +9,7 @@
         </li>
         <li class="breadcrumbs__item">
           <router-link class="breadcrumbs__link" v-bind:to="{name: 'main'}">
-            {{ getCategoryName(item.category) }}
+            {{ item.category }}
           </router-link>
         </li>
         <li class="breadcrumbs__item">
@@ -65,7 +65,7 @@
               <ul class="colors" v-if="item.colors">
                 <li class="colors__item" v-for="(color, index) in item.colors" v-bind:key="index">
                   <label class="colors__label">
-                    <input class="colors__radio sr-only" type="radio" name="color-1" value="#73B6EA" checked="">
+                    <input class="colors__radio sr-only" type="radio" name="color-1" value="color.code" checked="">
                     <span class="colors__value" v-bind:style="{'background-color': color.code}"></span>
                   </label>
                 </li>
@@ -169,7 +169,6 @@
 </template>
 
 <script>
-import getCategoryName from "@/helpers/getCategoryName";
 import numberFormat from "@/helpers/numberFormat";
 import AmountModifier from "@/components/AmountModifier";
 
@@ -186,14 +185,13 @@ export default {
       return 0;
     },
     item() {
-      return this.catalog.find(item => item.id === this.$route.params.id);
+      return 0;
     }
   },
   filters: {
     numberFormat,
   },
   methods: {
-    getCategoryName,
     addToCart() {
       this.$store.commit(
           'addProduct',

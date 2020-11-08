@@ -6,7 +6,6 @@
         v-bind:category.sync="filterCategory"
         v-bind:color.sync="filterColor"
         v-on:submit-filter="getFilteredCatalog"
-        v-on:clear-filter="getFullCatalog"
     />
     <section class="catalog">
       <div class="content__top content__top--catalog">
@@ -17,7 +16,7 @@
         Позиций в каталоге - {{ countItemsQuantity }}
       </span>
       </div>
-      <product-list v-bind:catalog="getCurrentPageList" />
+      <product-list v-bind:catalog="currentPageCatalog" />
       <base-pagination
           v-bind:itemsQuantity="countItemsQuantity"
           v-bind:itemsPerPage="itemsPerPage"
@@ -33,6 +32,7 @@ import ProductList from "@/components/ProductList";
 import BasePagination from "@/components/BasePagination";
 import ProductFilter from "@/components/ProductFilter";
 import axios from 'axios';
+import {BASE_API_URL} from '@/config';
 
 export default {
   name: "catalog",
@@ -45,84 +45,71 @@ export default {
     return {
       currentPage: 1,
       itemsPerPage: 4,
-      catalog: this.getFullCatalog(),
 
       filterPriceFrom: 0,
       filterPriceTo: 100000,
       filterColor: 'empty',
-      filterCategory: 'any',
+      filterCategory: 0,
 
       productsData: null,
     }
   },
   computed: {
-    getCurrentPageList() {
-      return this.catalog;
+    currentPageCatalog() {
+      return this.productsData
+          ? this.productsData.items.map((product) => {
+            return {
+              ...product,
+              image: product.image.file.url
+            }
+          })
+          : [];
     },
     countItemsQuantity() {
-      return (this.productsData && typeof this.productsData.pagination !== 'undefined') ? this.productsData.pagination.total : 0;
+      return this.productsData ? this.productsData.pagination.total : 0;
     },
-    modifyCatalog: {
-      get() {
-        return this.catalog;
-      },
-      set(v) {
-        this.catalog = v;
-      }
-    }
   },
   methods: {
     getCurrentPage(page) {
       this.currentPage = page;
     },
     getFilteredCatalog() {
-      const filteredCatalog = this.catalog.filter((item) => {
-
-        if (this.filterPriceFrom > 0 || this.filterPriceTo < 100000) {
-          if (item.price < this.filterPriceFrom || item.price > this.filterPriceTo) {
-            return false;
-          }
-        }
-
-        if (this.filterCategory !== 'any') {
-          if (item.category !== this.filterCategory) {
-            return false;
-          }
-        }
-
-        if (this.filterColor !== 'empty') {
-          if (!item.colors || item.colors.findIndex(item => item === this.filterColor) === -1) {
-            return false;
-          }
-        }
-        return true;
-      });
-      return this.modifyCatalog = filteredCatalog;
+      return this.currentPageCatalog;
     },
     getFullCatalog() {
-      axios.get('https://vue-study.skillbox.ru/api/products', {
-        params: {
-          page: this.currentPage,
-          limit: 4
-        }
-      })
-        .then(response => this.productsData = response.data);
-
-      return this.productsData ? this.productsData : [];
+      clearTimeout(this.getFullCatalogTimer);
+      this.getFullCatalogTimer = setTimeout(() => {
+        axios
+          .get(BASE_API_URL + 'api/products', {
+            params: {
+              page: this.currentPage,
+              limit: this.itemsPerPage,
+              minPrice: this.filterPriceFrom,
+              maxPrice: this.filterPriceTo,
+              colorId: this.filterColor,
+              categoryId: this.filterCategory,
+            }
+          })
+          .then(response => this.productsData = response.data);
+      }, 0);
     },
   },
   watch: {
-    productsData() {
-      this.modifyCatalog = this.productsData.items.map((product) => {
-        return {
-          ...product,
-          image: product.image.file.url
-        }
-      });
-    },
     currentPage() {
       this.getFullCatalog();
-    }
+    },
+    filterPriceFrom() {
+      this.getFullCatalog();
+    },
+    filterPriceTo() {
+      this.getFullCatalog();
+    },
+    filterColor() {
+      this.getFullCatalog();
+    },
+    filterCategory() {
+      this.getFullCatalog();
+    },
   },
   created() {
     this.getFullCatalog();
