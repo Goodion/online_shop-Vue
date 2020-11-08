@@ -1,8 +1,5 @@
 import Vue from "vue"
 import Vuex from "vuex"
-import portable_speakers from '@/data/products/portable-speakers'
-import smartphones from "@/data/products/smartphones"
-import tablets from "@/data/products/tablets";
 
 Vue.use(Vuex);
 
@@ -43,7 +40,7 @@ export default new Vuex.Store({
             return state.cartProducts.map(item => {
                 return {
                     ...item,
-                    product: smartphones.concat(portable_speakers).concat(tablets).find(p => p.id === item.productId)
+                    // product: smartphones.concat(portable_speakers).concat(tablets).find(p => p.id === item.productId)
                 }
             });
         },

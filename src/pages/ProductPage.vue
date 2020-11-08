@@ -66,7 +66,7 @@
                 <li class="colors__item" v-for="(color, index) in item.colors" v-bind:key="index">
                   <label class="colors__label">
                     <input class="colors__radio sr-only" type="radio" name="color-1" value="#73B6EA" checked="">
-                    <span class="colors__value" v-bind:style="{'background-color': getColorCode(color)}"></span>
+                    <span class="colors__value" v-bind:style="{'background-color': color.code}"></span>
                   </label>
                 </li>
               </ul>
@@ -169,10 +169,6 @@
 </template>
 
 <script>
-import smartphones from "@/data/products/smartphones";
-import tablets from "@/data/products/tablets";
-import portable_speakers from "@/data/products/portable-speakers";
-import getColorCode from "@/helpers/getColorCode";
 import getCategoryName from "@/helpers/getCategoryName";
 import numberFormat from "@/helpers/numberFormat";
 import AmountModifier from "@/components/AmountModifier";
@@ -187,7 +183,7 @@ export default {
   },
   computed: {
     catalog() {
-      return smartphones.concat(portable_speakers).concat(tablets)
+      return 0;
     },
     item() {
       return this.catalog.find(item => item.id === this.$route.params.id);
@@ -197,7 +193,6 @@ export default {
     numberFormat,
   },
   methods: {
-    getColorCode,
     getCategoryName,
     addToCart() {
       this.$store.commit(

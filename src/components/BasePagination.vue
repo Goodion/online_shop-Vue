@@ -45,7 +45,9 @@ export default {
   },
   methods: {
     selectPage(page) {
-      this.$emit('set-current-page', page)
+      if (page >= 1 && page <= this.countPagesQuantity) {
+        this.$emit('set-current-page', page)
+      }
     }
   }
 }

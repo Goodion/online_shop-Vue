@@ -9,6 +9,14 @@
         v-on:clear-filter="getFullCatalog"
     />
     <section class="catalog">
+      <div class="content__top content__top--catalog">
+        <h1 class="content__title">
+          Каталог
+        </h1>
+        <span class="content__info">
+        Позиций в каталоге - {{ countItemsQuantity }}
+      </span>
+      </div>
       <product-list v-bind:catalog="getCurrentPageList" />
       <base-pagination
           v-bind:itemsQuantity="countItemsQuantity"
@@ -21,12 +29,10 @@
 </template>
 
 <script>
-import smartphones from "@/data/products/smartphones";
-import portable_speakers from "@/data/products/portable-speakers";
-import tablets from "@/data/products/tablets";
 import ProductList from "@/components/ProductList";
 import BasePagination from "@/components/BasePagination";
 import ProductFilter from "@/components/ProductFilter";
+import axios from 'axios';
 
 export default {
   name: "catalog",
@@ -37,9 +43,6 @@ export default {
   },
   data() {
     return {
-      smartphones,
-      portable_speakers,
-      tablets,
       currentPage: 1,
       itemsPerPage: 4,
       catalog: this.getFullCatalog(),
@@ -48,16 +51,16 @@ export default {
       filterPriceTo: 100000,
       filterColor: 'empty',
       filterCategory: 'any',
+
+      productsData: null,
     }
   },
   computed: {
     getCurrentPageList() {
-      let arr = this.catalog;
-      const offset = (this.currentPage - 1) * this.itemsPerPage;
-      return arr.slice(offset, offset + this.itemsPerPage);
+      return this.catalog;
     },
     countItemsQuantity() {
-      return this.catalog.length;
+      return (this.productsData && typeof this.productsData.pagination !== 'undefined') ? this.productsData.pagination.total : 0;
     },
     modifyCatalog: {
       get() {
@@ -97,10 +100,33 @@ export default {
       return this.modifyCatalog = filteredCatalog;
     },
     getFullCatalog() {
-      this.getCurrentPage(1);
-      return this.modifyCatalog = smartphones.concat(portable_speakers).concat(tablets);
+      axios.get('https://vue-study.skillbox.ru/api/products', {
+        params: {
+          page: this.currentPage,
+          limit: 4
+        }
+      })
+        .then(response => this.productsData = response.data);
+
+      return this.productsData ? this.productsData : [];
     },
   },
+  watch: {
+    productsData() {
+      this.modifyCatalog = this.productsData.items.map((product) => {
+        return {
+          ...product,
+          image: product.image.file.url
+        }
+      });
+    },
+    currentPage() {
+      this.getFullCatalog();
+    }
+  },
+  created() {
+    this.getFullCatalog();
+  }
 }
 </script>
 

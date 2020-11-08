@@ -1,7 +1,7 @@
 <template>
   <span>
     <router-link class="catalog__pic" v-bind:to="{name: 'product', params: {id: item.id}}">
-      <img v-bind:src="`img/${item.image}`" v-bind:srcset="`img/${item.image} 2x`" v-bind:alt="item.title">
+      <img v-bind:src="item.image" v-bind:srcset="`${item.image} 2x`" v-bind:alt="item.title">
     </router-link>
 
     <h3 class="catalog__title">
@@ -18,7 +18,7 @@
       <li class="colors__item" v-for="(color, index) in item.colors" v-bind:key="index">
         <label class="colors__label">
           <input class="colors__radio sr-only" type="radio" name="color-1" value="#73B6EA" checked="">
-          <span class="colors__value" v-bind:style="{'background-color': getColorCode(color)}"></span>
+          <span class="colors__value" v-bind:style="{'background-color': color.code}"></span>
         </label>
       </li>
     </ul>
@@ -26,7 +26,6 @@
 </template>
 
 <script>
-import getColorCode from "@/helpers/getColorCode";
 import numberFormat from "@/helpers/numberFormat";
 
 export default {
@@ -35,9 +34,6 @@ export default {
   filters: {
     numberFormat,
   },
-  methods: {
-    getColorCode,
-  }
 }
 </script>
 
