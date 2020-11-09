@@ -1,6 +1,16 @@
 <template>
-  <main class="content container">
-    <div class="content__top">
+  <main class="content container" v-if="productLoading">
+    <base-preloader v-bind:message="'Информация загружается...'" />
+  </main>
+  <main class="content container" v-else-if="productLoadingFailure">
+    <loading-error
+        v-bind:message="'Не удалось загрузить карточку товара!!!'"
+        v-bind:retryButtonValue="'Попробовать ещё раз'"
+        v-on:retry="getProductDetail"
+    />
+  </main>
+  <main class="content container" v-else>
+    <div class="content__top" v-show="productData">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
           <router-link class="breadcrumbs__link" v-bind:to="{name: 'main'}">
@@ -9,7 +19,7 @@
         </li>
         <li class="breadcrumbs__item">
           <router-link class="breadcrumbs__link" v-bind:to="{name: 'main'}">
-            {{ item.category }}
+            {{ itemCategoryTitle }}
           </router-link>
         </li>
         <li class="breadcrumbs__item">
@@ -23,30 +33,8 @@
     <section class="item">
       <div class="item__pics pics">
         <div class="pics__wrapper">
-          <img max-width="570" max-height="570" v-bind:src="`img/${item.image}`" v-bind:srcset="`img/${item.image} 2x`" v-bind:alt="item.title">
+          <img max-width="570" max-height="570" v-bind:src="itemImageUrl" v-bind:srcset="`${itemImageUrl} 2x`" v-bind:alt="item.title">
         </div>
-        <ul class="pics__list">
-          <li class="pics__item">
-            <a href="" class="pics__link pics__link--current">
-              <img width="98" height="98" src="img/phone-square-1.jpg" srcset="img/phone-square-1@2x.jpg 2x" alt="Название товара">
-            </a>
-          </li>
-          <li class="pics__item">
-            <a href="" class="pics__link">
-              <img width="98" height="98" src="img/phone-square-2.jpg" srcset="img/phone-square-2@2x.jpg 2x" alt="Название товара">
-            </a>
-          </li>
-          <li class="pics__item">
-            <a href="" class="pics__link">
-              <img width="98" height="98" src="img/phone-square-3.jpg" srcset="img/phone-square-3@2x.jpg 2x" alt="Название товара">
-            </a>
-          </li>
-          <li class="pics__item">
-            <a class="pics__link" href="#">
-              <img width="98" height="98" src="img/phone-square-4.jpg" srcset="img/phone-square-4@2x.jpg 2x" alt="Название товара">
-            </a>
-          </li>
-        </ul>
       </div>
 
       <div class="item__info">
@@ -67,37 +55,6 @@
                   <label class="colors__label">
                     <input class="colors__radio sr-only" type="radio" name="color-1" value="color.code" checked="">
                     <span class="colors__value" v-bind:style="{'background-color': color.code}"></span>
-                  </label>
-                </li>
-              </ul>
-            </fieldset>
-
-            <fieldset class="form__block">
-              <legend class="form__legend">Объемб в ГБ:</legend>
-
-              <ul class="sizes sizes--primery">
-                <li class="sizes__item">
-                  <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" value="32">
-                    <span class="sizes__value">
-                      32gb
-                    </span>
-                  </label>
-                </li>
-                <li class="sizes__item">
-                  <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" value="64">
-                    <span class="sizes__value">
-                      64gb
-                    </span>
-                  </label>
-                </li>
-                <li class="sizes__item">
-                  <label class="sizes__label">
-                    <input class="sizes__radio sr-only" type="radio" name="sizes-item" value="128" checked="">
-                    <span class="sizes__value">
-                      128gb
-                    </span>
                   </label>
                 </li>
               </ul>
@@ -171,21 +128,36 @@
 <script>
 import numberFormat from "@/helpers/numberFormat";
 import AmountModifier from "@/components/AmountModifier";
+import axios from "axios";
+import {BASE_API_URL} from "@/config";
+import BasePreloader from "@/components/BasePreloader";
+import LoadingError from "@/components/LoadingError";
 
 export default {
   name: "ProductPage",
-  components: {AmountModifier},
+  components: {
+    AmountModifier,
+    BasePreloader,
+    LoadingError
+  },
   data() {
     return {
-      productAmount: 1
+      productAmount: 1,
+
+      productData: null,
+      productLoading: false,
+      productLoadingFailure: true,
     }
   },
   computed: {
-    catalog() {
-      return 0;
-    },
     item() {
-      return 0;
+      return this.productData;
+    },
+    itemImageUrl() {
+      return this.item.image.file.url;
+    },
+    itemCategoryTitle() {
+      return this.item.category.title;
     }
   },
   filters: {
@@ -198,11 +170,37 @@ export default {
           {productId: this.item.id, amount: this.productAmount}
       )
     },
+    getProductDetail() {
+      this.productLoading = true;
+      this.productLoadingFailure = false;
+      clearTimeout(this.getProductDetailTimer);
+      this.getProductDetailTimer = setTimeout(() => {
+        axios
+            .get(BASE_API_URL + `api/products/${this.$route.params.id}`)
+            .then(response => this.productData = response.data)
+            .catch(() => this.productLoadingFailure = true)
+            .then(() => this.productLoading = false);
+      }, 2000);
+    },
+  },
+  created() {
+    this.getProductDetail();
+  },
+  watch: {
+    '$route.params.id': {
+      handler() {
+        this.getProductDetail();
+      },
+      immediate: true,
+    }
   }
 }
 </script>
 
 <style scoped>
+.container {
+  min-height: 500px;
+}
 .pics__wrapper {
   display: flex;
   align-items:center;
