@@ -61,13 +61,28 @@
             </fieldset>
 
             <div class="item__row">
-
               <amount-modifier v-bind:amount.sync="productAmount" />
-
-              <button class="button button--primery" type="submit">
-                В корзину
-              </button>
+              <div class='sk-fading-circle' v-if="productBeingAdded">
+                <div class='sk-circle sk-circle-1'></div>
+                <div class='sk-circle sk-circle-2'></div>
+                <div class='sk-circle sk-circle-3'></div>
+                <div class='sk-circle sk-circle-4'></div>
+                <div class='sk-circle sk-circle-5'></div>
+                <div class='sk-circle sk-circle-6'></div>
+                <div class='sk-circle sk-circle-7'></div>
+                <div class='sk-circle sk-circle-8'></div>
+                <div class='sk-circle sk-circle-9'></div>
+                <div class='sk-circle sk-circle-10'></div>
+                <div class='sk-circle sk-circle-11'></div>
+                <div class='sk-circle sk-circle-12'></div>
+              </div>
+              <div class="cart__button" v-else>
+                <button class="button button--primery" type="submit">
+                  {{ buttonValue }}
+                </button>
+              </div>
             </div>
+
           </form>
         </div>
       </div>
@@ -129,7 +144,7 @@
 import numberFormat from "@/helpers/numberFormat";
 import AmountModifier from "@/components/AmountModifier";
 import axios from "axios";
-import {BASE_API_URL} from "@/config";
+import { BASE_API_URL } from "@/config";
 import BasePreloader from "@/components/BasePreloader";
 import LoadingError from "@/components/LoadingError";
 import { mapActions } from 'vuex';
@@ -148,6 +163,9 @@ export default {
       productData: null,
       productLoading: false,
       productLoadingFailure: true,
+
+      productAdded: false,
+      productBeingAdded: false,
     }
   },
   computed: {
@@ -159,6 +177,9 @@ export default {
     },
     itemCategoryTitle() {
       return this.item.category.title;
+    },
+    buttonValue() {
+      return !this.productAdded ? 'В корзину' : 'Добавлен';
     }
   },
   filters: {
@@ -168,7 +189,15 @@ export default {
     ...mapActions(['addProductToCart']),
 
     addToCart() {
+      this.productAdded = false;
+      this.productBeingAdded = true;
+
       this.addProductToCart({productId: this.item.id, amount: this.productAmount})
+      .then(() => {
+        this.productAdded = true;
+        setTimeout(() => this.productAdded = false, 1000);
+        this.productBeingAdded = false;
+      });
     },
     getProductDetail() {
       this.productLoading = true;
@@ -203,7 +232,114 @@ export default {
   align-items:center;
   justify-content: center;
 }
-button {
+.cart__button {
+  margin-top: 0;
+  width: auto;
+}
+.cart__button button {
   cursor: pointer;
 }
+
+.sk-fading-circle {
+  width: 3.8em;
+  height: 3.8em;
+  position: relative;
+  margin: 0 auto;
+}
+.sk-fading-circle .sk-circle {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.sk-fading-circle .sk-circle:before {
+  content: '';
+  display: block;
+  margin: 0 auto;
+  width: 15%;
+  height: 15%;
+  background-color: #337ab7;
+  border-radius: 100%;
+  animation: sk-fading-circle-delay 1.2s infinite ease-in-out both;
+}
+.sk-fading-circle .sk-circle-2 {
+  transform: rotate(30deg);
+}
+.sk-fading-circle .sk-circle-3 {
+  transform: rotate(60deg);
+}
+.sk-fading-circle .sk-circle-4 {
+  transform: rotate(90deg);
+}
+.sk-fading-circle .sk-circle-5 {
+  transform: rotate(120deg);
+}
+.sk-fading-circle .sk-circle-6 {
+  transform: rotate(150deg);
+}
+.sk-fading-circle .sk-circle-7 {
+  transform: rotate(180deg);
+}
+.sk-fading-circle .sk-circle-8 {
+  transform: rotate(210deg);
+}
+.sk-fading-circle .sk-circle-9 {
+  transform: rotate(240deg);
+}
+.sk-fading-circle .sk-circle-10 {
+  transform: rotate(270deg);
+}
+.sk-fading-circle .sk-circle-11 {
+  transform: rotate(300deg);
+}
+.sk-fading-circle .sk-circle-12 {
+  transform: rotate(330deg);
+}
+.sk-fading-circle .sk-circle-2:before {
+  animation-delay: -1.1s;
+}
+.sk-fading-circle .sk-circle-3:before {
+  animation-delay: -1s;
+}
+.sk-fading-circle .sk-circle-4:before {
+  animation-delay: -0.9s;
+}
+.sk-fading-circle .sk-circle-5:before {
+  animation-delay: -0.8s;
+}
+.sk-fading-circle .sk-circle-6:before {
+  animation-delay: -0.7s;
+}
+.sk-fading-circle .sk-circle-7:before {
+  animation-delay: -0.6s;
+}
+.sk-fading-circle .sk-circle-8:before {
+  animation-delay: -0.5s;
+}
+.sk-fading-circle .sk-circle-9:before {
+  animation-delay: -0.4s;
+}
+.sk-fading-circle .sk-circle-10:before {
+  animation-delay: -0.3s;
+}
+.sk-fading-circle .sk-circle-11:before {
+  animation-delay: -0.2s;
+}
+.sk-fading-circle .sk-circle-12:before {
+  animation-delay: -0.1s;
+}
+@keyframes sk-fading-circle-delay {
+  0%, 39%, 100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+.item__row {
+  align-items: center;
+  justify-items: center;
+}
+
 </style>
