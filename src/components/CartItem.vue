@@ -1,7 +1,7 @@
 <template>
   <li class="cart__item product">
     <div class="product__pic">
-      <img v-bind:src="`img/${item.product.image}`" width="120" height="120" v-bind:alt="item.product.title">
+      <img v-bind:src="item.product.image" width="120" height="120" v-bind:alt="item.product.title">
     </div>
     <h3 class="product__title">
       {{ item.product.title }}
@@ -26,7 +26,7 @@
 
 <script>
 import numberFormat from "@/helpers/numberFormat";
-import {mapMutations} from 'vuex'
+import { mapActions } from 'vuex';
 import AmountModifier from "@/components/AmountModifier";
 
 export default {
@@ -42,14 +42,15 @@ export default {
         return this.item.amount;
       },
       set(v) {
-        this.$store.commit('updateCartProductAmount', {productId: this.item.productId, amount: v});
+        this.$store.dispatch('updateCartProductAmount', {productId: this.item.productId, amount: v});
       }
-    }
+    },
   },
   methods: {
-    ...mapMutations({
-      removeProduct: 'removeCartProduct'
-    }),
+    ...mapActions(['removeProductFromCart']),
+    removeProduct() {
+      this.removeProductFromCart({productId: this.item.productId});
+    }
   }
 }
 </script>

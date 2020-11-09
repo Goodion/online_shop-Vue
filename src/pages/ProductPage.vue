@@ -132,6 +132,7 @@ import axios from "axios";
 import {BASE_API_URL} from "@/config";
 import BasePreloader from "@/components/BasePreloader";
 import LoadingError from "@/components/LoadingError";
+import { mapActions } from 'vuex';
 
 export default {
   name: "ProductPage",
@@ -164,11 +165,10 @@ export default {
     numberFormat,
   },
   methods: {
+    ...mapActions(['addProductToCart']),
+
     addToCart() {
-      this.$store.commit(
-          'addProduct',
-          {productId: this.item.id, amount: this.productAmount}
-      )
+      this.addProductToCart({productId: this.item.id, amount: this.productAmount})
     },
     getProductDetail() {
       this.productLoading = true;
@@ -182,9 +182,6 @@ export default {
             .then(() => this.productLoading = false);
       }, 2000);
     },
-  },
-  created() {
-    this.getProductDetail();
   },
   watch: {
     '$route.params.id': {
