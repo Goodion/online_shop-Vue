@@ -1,5 +1,15 @@
 <template>
-  <main class="content container">
+  <main class="content container" v-if="cartLoading">
+    <base-preloader v-bind:message="'Корзина загружается...'" />
+  </main>
+  <main class="content container" v-else-if="cartLoadingFailure" >
+    <loading-error
+        v-bind:message="'Не удалось загрузить корзину!!!'"
+        v-bind:retryButtonValue="'Попробовать ещё раз'"
+        v-on:retry="reloadCart"
+    />
+  </main>
+  <main class="content container" v-else>
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
@@ -18,7 +28,7 @@
         Корзина
       </h1>
       <span class="content__info">
-        {{ totalAmount }} наименований товара
+        {{ this.cartProductsTotalAmount }} наименований товара
       </span>
     </div>
 
@@ -26,7 +36,7 @@
       <form class="cart__form form" action="#" method="POST">
         <div class="cart__field">
           <ul class="cart__list">
-            <cart-item v-for="item in products" v-bind:key="item.productId" v-bind:item="item"/>
+            <cart-item v-for="item in this.cartDetailProducts" v-bind:key="item.productId" v-bind:item="item"/>
           </ul>
         </div>
 
@@ -35,7 +45,7 @@
             Мы&nbsp;посчитаем стоимость доставки на&nbsp;следующем этапе
           </p>
           <p class="cart__price">
-            Итого: <span>{{ totalPrice | numberFormat }} ₽ </span>
+            Итого: <span>{{ this.cartTotalPrice | numberFormat }} ₽ </span>
           </p>
 
           <button class="cart__button button button--primery" type="submit">
@@ -51,23 +61,30 @@
 import { mapGetters } from 'vuex'
 import CartItem from "@/components/CartItem";
 import numberFormat from "@/helpers/numberFormat";
+import { mapState } from 'vuex';
+import BasePreloader from "@/components/BasePreloader";
+import LoadingError from "@/components/LoadingError";
 
 export default {
   name: "CartPage",
-  components: {CartItem},
+  components: {BasePreloader, CartItem, LoadingError},
   computed: {
-    ...mapGetters({
-      products: 'cartDetailProducts',
-      totalPrice: 'cartTotalPrice',
-      totalAmount: 'cartProductsTotalAmount',
-    }),
+    ...mapGetters(['cartDetailProducts', 'cartTotalPrice', 'cartProductsTotalAmount']),
+    ...mapState(['cartLoading', 'cartLoadingFailure']),
   },
   filters: {
     numberFormat,
+  },
+  methods: {
+    reloadCart() {
+      this.$store.dispatch('getCart');
+    }
   }
 }
 </script>
 
 <style scoped>
-
+.container {
+  min-height: 500px;
+}
 </style>
