@@ -18,9 +18,9 @@
           </router-link>
         </li>
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link">
+          <router-link class="breadcrumbs__link" v-bind:to="{name: 'cart'}">
             Корзина
-          </a>
+          </router-link>
         </li>
       </ul>
 
@@ -28,12 +28,12 @@
         Корзина
       </h1>
       <span class="content__info">
-        {{ this.cartProductsTotalAmount }} наименований товара
+        Товаров в корзине - {{ this.cartProductsTotalAmount }}
       </span>
     </div>
 
     <section class="cart">
-      <form class="cart__form form" action="#" method="POST">
+      <form class="cart__form form" action="#" method="POST" v-on:submit.prevent="order">
         <div class="cart__field">
           <ul class="cart__list">
             <cart-item v-for="item in this.cartDetailProducts" v-bind:key="item.productId" v-bind:item="item"/>
@@ -48,7 +48,7 @@
             Итого: <span>{{ this.cartTotalPrice | numberFormat }} ₽ </span>
           </p>
 
-          <button class="cart__button button button--primery" type="submit">
+          <button class="cart__button button button--primery" type="submit" v-if="cartProductsTotalAmount > 0">
             Оформить заказ
           </button>
         </div>
@@ -58,12 +58,13 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from 'vuex';
 import CartItem from "@/components/CartItem";
 import numberFormat from "@/helpers/numberFormat";
 import { mapState } from 'vuex';
 import BasePreloader from "@/components/BasePreloader";
 import LoadingError from "@/components/LoadingError";
+import router from "@/router";
 
 export default {
   name: "CartPage",
@@ -78,6 +79,9 @@ export default {
   methods: {
     reloadCart() {
       this.$store.dispatch('getCart');
+    },
+    order() {
+      router.push('order');
     }
   }
 }

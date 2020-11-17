@@ -58,6 +58,8 @@
 <script>
 import axios from "axios";
 import {BASE_API_URL} from '@/config';
+import numberFormat from '@/helpers/numberFormat';
+import toNumberFormat from "@/helpers/toNumberFormat";
 
 export default {
   name: "ProductFilter",
@@ -84,7 +86,7 @@ export default {
     },
     colors() {
       return this.colorsData ? this.colorsData : [];
-    }
+    },
   },
   watch: {
     minPrice(v) {
@@ -129,6 +131,10 @@ export default {
     this.getColors();
     this.getCategories();
   },
+  filters: {
+    numberFormat,
+    toNumberFormat,
+  }
 }
 </script>
 
