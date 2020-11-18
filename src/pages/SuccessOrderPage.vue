@@ -1,5 +1,5 @@
 <template>
-  <main class="content container" v-if="orderData">
+  <main class="content container">
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
@@ -78,7 +78,7 @@
 
         <div class="cart__block">
           <ul class="cart__orders">
-            <li class="cart__order" v-for="item in orderData.basket.items" v-bind:key="item.id">
+            <li class="cart__order" v-for="item in cartData" v-bind:key="item.id">
               <h3>{{ item.product.title }}</h3>
               <b>{{ item.price | numberFormat }} ₽</b>
               <span>Артикул: {{ item.product.id }}</span>
@@ -87,7 +87,7 @@
 
           <div class="cart__total">
             <p>Доставка: <b>500 ₽</b></p>
-            <p>Итого: <b>{{ orderData.basket.items.length }}</b> товара на сумму <b>{{ orderData.totalPrice | numberFormat}} ₽</b></p>
+            <p>Итого: <b>{{ cartData.length }}</b> товара на сумму <b>{{ orderData.totalPrice | numberFormat}} ₽</b></p>
           </div>
         </div>
       </form>
@@ -102,8 +102,11 @@ export default {
   name: "SuccessOrderPage",
   computed: {
     orderData() {
-      return this.$store.state.successOrder;
-    }
+      return this.$store.state.successOrder || {};
+    },
+    cartData() {
+      return Object.keys(this.orderData).length !== 0 ? this.orderData.basket.items : [];
+    },
   },
   filters: {
     numberFormat

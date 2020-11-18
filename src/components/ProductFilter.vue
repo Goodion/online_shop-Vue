@@ -59,7 +59,6 @@
 import axios from "axios";
 import {BASE_API_URL} from '@/config';
 import numberFormat from '@/helpers/numberFormat';
-import toNumberFormat from "@/helpers/toNumberFormat";
 
 export default {
   name: "ProductFilter",
@@ -133,7 +132,6 @@ export default {
   },
   filters: {
     numberFormat,
-    toNumberFormat,
   }
 }
 </script>
